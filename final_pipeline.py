@@ -18,31 +18,31 @@ from utils import *
 if __name__=="__main__":
     opt = parse_opts()
 
-    #Loading the class labels
+    # Loading the class labels
     with open("label_map.txt") as obj:
         class_names = [line.strip() for line in obj.readlines()]
 
-    #Loading list of video
+    # Loading list of video
     input_files = []
     with open(opt.input, 'r') as f:
         for row in f:
             input_files.append(row[:-1])
 
-    #Inference using Pytorch Model
+    # Inference using Pytorch Model
     if(opt.type == 'pyt'):
 
         opt.mean = get_mean()
         opt.arch = '{}-{}'.format(opt.model_name, opt.model_depth)
-        #Setting Sample Size
+        # Setting Sample Size
         opt.sample_size = 112
-        #Setting Sample Duration
+        # Setting Sample Duration
         opt.sample_duration = 16
-        #Number of classes in our label list
+        # Number of classes in our label list
         opt.n_classes = 400
 
         model = generate_model(opt)
         print('loading model {}'.format(opt.model))
-        #Loading the Model
+        # Loading the Model
         model_data = torch.load(opt.model)
         assert opt.arch == model_data['arch']
         model.load_state_dict(model_data['state_dict'])
@@ -56,16 +56,16 @@ if __name__=="__main__":
             video_path = os.path.join(opt.video_root, input_file)
             if os.path.exists(video_path):
                 subprocess.call('mkdir tmp', shell=True)
-                #Converting Video into frames and storing it temporarily in tmp folder
+                # Converting Video into frames and storing it temporarily in tmp folder
                 subprocess.call('ffmpeg -i {} tmp/image_%05d.jpg'.format(video_path),
                                 shell=True)
 
-                #Classification step"
+                # Classification step"
                 result = classify_video('tmp', input_file, class_names, model, opt)
-                #Storing the result in list
+                # Storing the result in list
                 output.append(result)
                 
-                #Deleting the tmp folder
+                # Deleting the tmp folder
                 subprocess.call('rm -rf tmp', shell=True)
             else:
                 print('{} does not exist'.format(input_file))
@@ -77,9 +77,9 @@ if __name__=="__main__":
         for x,y in zip(input_files, output):
             print(x, y)
     
-    #Inference using Tensorflow Model
+    # Inference using Tensorflow Model
     elif (opt.type == 'tf'):
-        #Loading Tensorflow Model
+        # Loading Tensorflow Model
         i3d = hub.load(opt.model).signatures['default']
 
         print("PRINTING THE RESULT USING TENSORFLOW MODEL:")

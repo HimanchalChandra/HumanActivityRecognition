@@ -9,6 +9,7 @@ def crop_center_square(frame):
   return frame[start_y:start_y+min_dim,start_x:start_x+min_dim]
 
 def load_video(path, max_frames=0, resize=(224, 224)):
+  # Reading Video as frames using OpenCV
   cap = cv2.VideoCapture(path)
   frames = []
   try:
@@ -16,9 +17,9 @@ def load_video(path, max_frames=0, resize=(224, 224)):
       ret, frame = cap.read()
       if not ret:
         break
-      #Cropping the image from center
+      # Cropping the image from center
       frame = crop_center_square(frame)
-      #Resizing the frame to 224 x 224
+      # Resizing the frame to 224 x 224
       frame = cv2.resize(frame, resize)
       frame = frame[:, :, [2, 1, 0]]
       frames.append(frame)
